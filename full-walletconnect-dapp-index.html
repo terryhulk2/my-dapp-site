@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Wallet Connect</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@latest/dist/umd/index.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #3b99fc;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        h1 {
+            font-size: 36px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Connect your Wallet</h1>
+    <button id="connectWallet">Connect Trust Wallet</button>
+    <button id="connectMetaMask">Connect MetaMask</button>
+    <button id="connectPhantom">Connect Phantom</button>
+
+    <div id="walletInfo" style="margin-top: 20px;"></div>
+
+    <script>
+        let web3;
+        let provider;
+
+        document.getElementById('connectWallet').addEventListener('click', () => {
+            provider = new WalletConnectProvider({
+                infuraId: 'INFURA_ID', // Replace with your Infura ID
+            });
+
+            provider.enable().then(() => {
+                web3 = new Web3(provider);
+                document.getElementById('walletInfo').innerHTML = 'Connected to Trust Wallet!';
+            }).catch(err => {
+                console.error('Failed to connect:', err);
+            });
+        });
+
+        document.getElementById('connectMetaMask').addEventListener('click', async () => {
+            if (window.ethereum) {
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    web3 = new Web3(window.ethereum);
+                    document.getElementById('walletInfo').innerHTML = 'Connected to MetaMask!';
+                } catch (err) {
+                    console.error('MetaMask connection error:', err);
+                }
+            } else {
+                alert('Please install MetaMask!');
+            }
+        });
+
+        document.getElementById('connectPhantom').addEventListener('click', async () => {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const response = await window.solana.connect();
+                    document.getElementById('walletInfo').innerHTML = 'Connected to Phantom!';
+                } catch (err) {
+                    console.error('Phantom connection error:', err);
+                }
+            } else {
+                alert('Please install Phantom wallet!');
+            }
+        });
+    </script>
+</body>
+</html>
